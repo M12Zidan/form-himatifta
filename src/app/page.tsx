@@ -7,6 +7,7 @@ export default function Home() {
       <h1>jejfefiojeiojfiojewioj</h1>
       <Input type="email" placeholder="Email" />
       <h1>gwduiwhuhdwiuhdwuh</h1>
+      <h2>feijoifejoijfeoijfoi</h2>
     </div>
 
   );
