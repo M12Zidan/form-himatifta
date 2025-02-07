@@ -16,7 +16,7 @@ export default function Layout({ children } :any) {
           <div className="hidden md:flex space-x-6">
             <Link href="/" className="block text-lg hover:text-gray-300">Home</Link>
             <Link href="/client" className="block text-lg hover:text-gray-300">Client</Link>
-            <Link href="/admin" className="block text-lg hover:text-gray-300">Admin</Link>
+            <Link href="/admin/login" className="block text-lg hover:text-gray-300">Admin</Link>
           </div>
         </div>
       </nav>
