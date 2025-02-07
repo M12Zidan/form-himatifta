@@ -41,9 +41,11 @@ function Page() {
 
   return (
     <Child>
-      <Card className="w-[350px] mx-auto mt-40">
-        <CardHeader>
-          <CardTitle>HIMATIFTA</CardTitle>
+      <Card className="w-[350px] mx-auto mt-40 ">
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl font-semibold text-green-600">
+            HIMATIFTA
+          </CardTitle>
           <CardDescription>
             Sistem Informasi Himpunan Mahasiswa Teknik Informatika UNITOMO
           </CardDescription>
@@ -79,7 +81,9 @@ function Page() {
           <Button variant="outline">
             <Link href="/admin/register">Register</Link>
           </Button>
-          <Button onClick={handleSubmit}><Link href="/admin/create">Login</Link></Button>
+          <Button onClick={handleSubmit}>
+            <Link href="/admin/create">Login</Link>
+          </Button>
         </CardFooter>
       </Card>
     </Child>

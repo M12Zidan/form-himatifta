@@ -1,5 +1,4 @@
 "use client";
-
 import Child from "../../page";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -7,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -129,6 +127,7 @@ function Page() {
                       >
                         + Tambah Opsi
                       </Button>
+                      
                     </div>
                   )}
                   {q.type === "checkbox" && (
@@ -171,9 +170,8 @@ function Page() {
           >
             + Tambah Pertanyaan
           </Button>
-
           <Button onClick={sendForm} className="w-1/4 bg-blue-500 text-white">
-            Kirim Form
+            Send
           </Button>
         </div>
       </div>
