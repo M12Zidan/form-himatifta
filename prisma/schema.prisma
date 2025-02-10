@@ -1,0 +1,64 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  schemas    = ["auth", "form"]
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+model user {
+  user_id    String  @id @unique(map: "unique_users_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
+  nm_lengkap String? @db.VarChar(255)
+  password   String? @db.VarChar(255)
+  email      String? @db.VarChar(255)
+  form       form[]
+
+  @@schema("auth")
+}
+
+model form {
+  form_id          String  @id @unique(map: "unique_form_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
+  user_id          String  @map("user_id")
+  nama_form        String? @db.VarChar(255)
+  description_form String? @db.VarChar(255)
+  status           Boolean @default(false)
+  user             user    @relation(fields: [user_id], references: [user_id], onUpdate: Restrict)
+
+  @@schema("form")
+}
+
+model question {
+  question_id      String   @id @default(uuid()) @db.VarChar(255) // Sekarang jadi primary key
+  owner_form       String   @map("form_id")
+  question         String?  @db.VarChar(255)
+  type_question_id Int      @map("type_question")
+  answer_options   String[]
+  type_question type_question @relation(fields: [type_question_id], references: [id], onUpdate: Restrict)
+  response      response[]
+
+  @@schema("form")
+}
+
+model type_question {
+  id       Int        @id @default(autoincrement())
+  value    String?    @db.VarChar(255)
+  response response[]
+  question question[]
+
+  @@schema("form")
+}
+
+model response {
+  response_id      String        @id @unique(map: "unique_responsen_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
+  question_id      String        @map("question_id")
+  type_question_id Int           @map("type_question")
+  value            String[]      @db.VarChar(255)
+  question         question      @relation(fields: [question_id], references: [question_id], onUpdate: Restrict)
+  type_question    type_question @relation(fields: [type_question_id], references: [id], onUpdate: Restrict)
+
+  @@schema("form")
+}
