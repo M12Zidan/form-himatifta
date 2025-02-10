@@ -50,6 +50,7 @@ CREATE TABLE "form"."type_question" (
 -- CreateTable
 CREATE TABLE "form"."response" (
     "response_id" VARCHAR(255) NOT NULL DEFAULT public.uuid_generate_v4(),
+    "form_id" TEXT NOT NULL,
     "question_id" TEXT NOT NULL,
     "type_question" INTEGER NOT NULL,
     "value" VARCHAR(255)[],
@@ -70,7 +71,13 @@ CREATE UNIQUE INDEX "unique_responsen_cuid" ON "form"."response"("response_id");
 ALTER TABLE "form"."form" ADD CONSTRAINT "form_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."user"("user_id") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
+ALTER TABLE "form"."question" ADD CONSTRAINT "question_form_id_fkey" FOREIGN KEY ("form_id") REFERENCES "form"."form"("form_id") ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+-- AddForeignKey
 ALTER TABLE "form"."question" ADD CONSTRAINT "question_type_question_fkey" FOREIGN KEY ("type_question") REFERENCES "form"."type_question"("id") ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+-- AddForeignKey
+ALTER TABLE "form"."response" ADD CONSTRAINT "response_form_id_fkey" FOREIGN KEY ("form_id") REFERENCES "form"."form"("form_id") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE "form"."response" ADD CONSTRAINT "response_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "form"."question"("question_id") ON DELETE RESTRICT ON UPDATE RESTRICT;
