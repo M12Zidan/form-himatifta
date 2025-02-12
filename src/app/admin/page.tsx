@@ -2,7 +2,7 @@
 
 import Child from "../page";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -12,36 +12,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash, Eye } from "lucide-react";
+import axios from "axios";
 
 function page() {
-  const [forms, setForms] = useState([
-    {
-      id: 1,
-      name: "Survey Kepuasan Mahasiswa",
-      createdAt: "2024-02-05",
-      status: "Aktif",
-    },
-    {
-      id: 2,
-      name: "Pendataan UKM Kampus",
-      createdAt: "2024-01-20",
-      status: "Nonaktif",
-    },
-    {
-      id: 3,
-      name: "Evaluasi Dosen Semester Ganjil",
-      createdAt: "2024-01-15",
-      status: "Aktif",
-    },
-    {
-      id: 4,
-      name: "Pendaftaran Beasiswa",
-      createdAt: "2024-02-01",
-      status: "Ditutup",
-    },
-  ]);
+  interface data {
+    form_id: string;
+    nama_form: string;
+    deskripsi: string;
+    status: boolean;
+    createdBy: {
+      id: string;
+      nama: string;
+    };
+  }
+
+  const [forms, setForms] = useState<data[]>([]);
+
+  const fetch = async () => {
+    try {
+      const response = await axios.get("/api/form");
+      setForms(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetch();
+  }, []);
 
   return (
     <Child>
@@ -58,7 +57,7 @@ function page() {
                   Nama Form
                 </TableHead>
                 <TableHead className="px-6 py-3 text-left text-gray-700 font-semibold">
-                  Tanggal Dibuat
+                  Dibuat Oleh
                 </TableHead>
                 <TableHead className="px-6 py-3 text-center text-gray-700 font-semibold">
                   Status
@@ -72,34 +71,36 @@ function page() {
             <TableBody>
               {forms.map((form) => (
                 <TableRow
-                  key={form.id}
+                  key={form.form_id}
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell className="px-6 py-4 text-gray-800">
-                    {form.name}
+                    <span className="font-semibold">{form.nama_form + " "}</span>
+                    {form.deskripsi}
                   </TableCell>
                   <TableCell className="px-6 py-4 text-gray-600">
-                    {form.createdAt}
+                    {form.createdBy.nama}
                   </TableCell>
                   <TableCell className="px-6 py-4 text-center">
-                    <Badge
+                    <Button
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        form.status === "Aktif"
+                        form.status === true
                           ? "bg-green-500 text-white"
-                          : form.status === "Nonaktif"
+                          : form.status === false
                           ? "bg-yellow-500 text-white"
                           : "bg-red-500 text-white"
                       }`}
                     >
-                      {form.status}
-                    </Badge>
+                      {form.status ? "Atif" : "Noaktif"}
+                    </Button>
                   </TableCell>
                   <TableCell className="px-6 py-4 flex justify-center gap-3">
                     <Button
                       size="sm"
                       className="bg-blue-500 text-white hover:bg-blue-600"
                     >
-                      <Eye size={16} className="mr-1" /> Lihat
+                      <Eye size={16} className="mr-1" />{" "}
+                      <Link href={`/admin/${form.form_id}`}>Lihat</Link>
                     </Button>
                     <Button
                       size="sm"
@@ -126,9 +127,6 @@ function page() {
           Login
         </Link>
       </div>
-
-      
-      
     </Child>
   );
 }

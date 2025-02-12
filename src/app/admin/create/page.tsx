@@ -1,14 +1,9 @@
 "use client";
-import Child from "../../page";
 import { useState } from "react";
+import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -18,31 +13,57 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import Child from "../../page";
 
-function Page() {
+export default function Page() {
   const [formName, setFormName] = useState("Untitled Form");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState("deskripsi");
   const [questions, setQuestions] = useState([
-    { id: 1, text: "Pertanyaan 1", type: "text", options: [""] },
+    {
+      question: "Pertanyaan 1",
+      type_question_id: "text",
+      answer_options: [""],
+    },
   ]);
 
   const addQuestion = () => {
     setQuestions([
       ...questions,
-      { id: questions.length + 1, text: "", type: "text", options: [""] },
+      { question: "", type_question_id: "text", answer_options: [""] },
     ]);
   };
 
-  const updateQuestion = (id : any, key : any, value :any) => {
-    setQuestions(
-      questions.map((q) => (q.id === id ? { ...q, [key]: value } : q))
+  const updateQuestion = (id: any, key: any, value: any) => {
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((q, index) =>
+        index === id ? { ...q, [key]: value } : q
+      )
     );
   };
 
-  const sendForm = () => {
-    console.log("Nama Form:", formName);
-    console.log("Deskripsi:", description);
-    console.log("Pertanyaan:", questions);
+  const sendForm = async () => {
+    const formData = {
+      user_id: "38359f9b-efcb-4ea7-beaf-ef57106e3bfb",
+      nama_form: formName,
+      description_form: description,
+      status: false,
+      question: questions.map((q) => ({
+        question: q.question,
+        type_question_id: q.type_question_id,
+        answer_options: q.answer_options || [], // Pastikan tidak undefined
+      })),
+    };
+    console.log("Data form:", formData);
+    console.log(questions);
+
+    try {
+      const response = await axios.post("/api/form", formData);
+      console.log("Data berhasil dikirim:", response.data.message);
+      alert("Form berhasil dikirim!");
+    } catch (error) {
+      console.error("Gagal mengirim data:", error);
+      alert("Gagal mengirim form");
+    }
   };
 
   return (
@@ -68,21 +89,25 @@ function Page() {
 
         {/* Question List */}
         <div className="space-y-6">
-          {questions.map((q) => (
-            <Card key={q.id}>
+          {questions.map((q, index) => (
+            <Card key={index}>
               <CardHeader>
-                <CardTitle>Pertanyaan {q.id}</CardTitle>
+                <CardTitle>Pertanyaan {index + 1}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Input
-                  value={q.text}
-                  onChange={(e) => updateQuestion(q.id, "text", e.target.value)}
+                  value={q.question}
+                  onChange={(e) =>
+                    updateQuestion(index, "question", e.target.value)
+                  }
                   placeholder="Masukkan pertanyaan"
                 />
 
                 <Select
-                  value={q.type}
-                  onValueChange={(value) => updateQuestion(q.id, "type", value)}
+                  value={q.type_question_id}
+                  onValueChange={(value) =>
+                    updateQuestion(index, "type_question_id", value)
+                  }
                 >
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Pilih tipe pertanyaan" />
@@ -96,23 +121,32 @@ function Page() {
                 </Select>
 
                 <div className="mt-3">
-                  {q.type === "text" && (
+                  {q.type_question_id === "text" && (
                     <Input placeholder="Jawaban singkat..." disabled />
                   )}
-                  {q.type === "textarea" && (
+                  {q.type_question_id === "textarea" && (
                     <Textarea placeholder="Jawaban panjang..." disabled />
                   )}
-                  {q.type === "multiple" && (
+                  {(q.type_question_id === "multiple" ||
+                    q.type_question_id === "checkbox") && (
                     <div className="space-y-2">
-                      {q.options.map((opt, idx) => (
+                      {q.answer_options.map((opt, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <input type="radio" disabled />
+                          {q.type_question_id === "multiple" ? (
+                            <input type="radio" disabled />
+                          ) : (
+                            <Checkbox disabled />
+                          )}
                           <Input
                             value={opt}
                             onChange={(e) => {
-                              const newOptions = [...q.options];
+                              const newOptions = [...q.answer_options];
                               newOptions[idx] = e.target.value;
-                              updateQuestion(q.id, "options", newOptions);
+                              updateQuestion(
+                                index,
+                                "answer_options",
+                                newOptions
+                              );
                             }}
                             placeholder="Opsi pilihan"
                           />
@@ -120,35 +154,10 @@ function Page() {
                       ))}
                       <Button
                         onClick={() =>
-                          updateQuestion(q.id, "options", [...q.options, ""])
-                        }
-                        variant="outline"
-                        className="mt-2"
-                      >
-                        + Tambah Opsi
-                      </Button>
-                      
-                    </div>
-                  )}
-                  {q.type === "checkbox" && (
-                    <div className="space-y-2">
-                      {q.options.map((opt, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <Checkbox disabled />
-                          <Input
-                            value={opt}
-                            onChange={(e) => {
-                              const newOptions = [...q.options];
-                              newOptions[idx] = e.target.value;
-                              updateQuestion(q.id, "options", newOptions);
-                            }}
-                            placeholder="Opsi checkbox"
-                          />
-                        </div>
-                      ))}
-                      <Button
-                        onClick={() =>
-                          updateQuestion(q.id, "options", [...q.options, ""])
+                          updateQuestion(index, "answer_options", [
+                            ...q.answer_options,
+                            "",
+                          ])
                         }
                         variant="outline"
                         className="mt-2"
@@ -171,12 +180,10 @@ function Page() {
             + Tambah Pertanyaan
           </Button>
           <Button onClick={sendForm} className="w-1/4 bg-blue-500 text-white">
-            Send
+            Kirim
           </Button>
         </div>
       </div>
     </Child>
   );
 }
-
-export default Page;

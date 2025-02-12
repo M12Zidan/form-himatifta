@@ -15,63 +15,77 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function Page() {
   const { id } = useParams();
 
   interface Form {
-    id: number;
-    name: string;
-    description: string;
+    form_id: string;
+    nama_form: string;
+    deskripsi: string;
     questions: {
-      id: number;
-      text: string;
+      id: string;
+      question: string;
       type: "multiple" | "checkbox" | "text" | "textarea";
-      options: string[];
+      answer_options: string[];
     }[];
   }
 
-  const form: Form = {
-    id: 1,
-    name: "Survey Kepuasan Mahasiswa",
-    description: "Silakan isi formulir ini dengan jujur untuk meningkatkan kualitas layanan kami.",
-    questions: [
-      {
-        id: 1,
-        text: "Apakah Anda puas dengan pelayanan kampus?",
-        type: "multiple",
-        options: ["Sangat Puas", "Puas", "Biasa Saja", "Tidak Puas"],
-      },
-      {
-        id: 2,
-        text: "Apa saja fasilitas yang sering Anda gunakan?",
-        type: "checkbox",
-        options: ["Perpustakaan", "Laboratorium", "Kantin", "Ruang Diskusi"],
-      },
-      {
-        id: 3,
-        text: "Apa pendapat Anda tentang suasana belajar di kampus?",
-        type: "text",
-        options: [],
-      },
-      {
-        id: 4,
-        text: "Berikan saran untuk perbaikan kampus.",
-        type: "textarea",
-        options: [],
-      },
-    ],
+  interface Answer {
+    form_id: string;
+    questions: { id: string; answer: string | string[] }[];
+  }
+
+  const [form, setForm] = useState<Form>({
+    form_id: "",
+    nama_form: "",
+    deskripsi: "",
+    questions: [],
+  });
+
+  const [answers, setAnswers] = useState<Answer>({
+    form_id: id as string,
+    questions: [],
+  });
+
+  useEffect(() => {
+    const fetchForm = async () => {
+      try {
+        const response = await axios.get(`/api/form/${id}`);
+        setForm(response.data.data);
+      } catch (error) {
+        console.error("Error fetching form data:", error);
+      }
+    };
+
+    fetchForm();
+  }, [id]);
+
+  const handleChange = (questionId: string, value: any) => {
+    setAnswers((prev) => {
+      const existingIndex = prev.questions.findIndex((q) => q.id === questionId);
+      let updatedQuestions = [...prev.questions];
+
+      if (existingIndex !== -1) {
+        updatedQuestions[existingIndex] = { id: questionId, answer: value };
+      } else {
+        updatedQuestions.push({ id: questionId, answer: value });
+      }
+
+      return { ...prev, questions: updatedQuestions };
+    });
   };
 
-  const [answers, setAnswers] = useState<{ [key: number]: any }>({});
-
-  const handleChange = (id: number, value: any) => {
-    setAnswers((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleSubmit = () => {
-    console.log("Jawaban yang dikirim:", answers);
+  const handleSubmit = async () => {
+    // try {
+    //   const response = await axios.post("/api/form/submit", answers);
+    //   console.log("Jawaban berhasil dikirim:", response.data);
+    // } catch (error) {
+    //   console.error("Gagal mengirim jawaban:", error);
+    // }
+    console.log(answers);
   };
 
   return (
@@ -79,8 +93,8 @@ function Page() {
       <div className="w-full max-w-3xl mx-auto py-12 px-6">
         <Card className="shadow-lg rounded-xl border border-gray-200">
           <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-t-xl">
-            <CardTitle className="text-xl font-bold">{form.name}</CardTitle>
-            <CardDescription className="text-gray-100">{form.description}</CardDescription>
+            <CardTitle className="text-xl font-bold">{form.nama_form}</CardTitle>
+            <CardDescription className="text-gray-100">{form.deskripsi}</CardDescription>
           </CardHeader>
         </Card>
 
@@ -88,7 +102,7 @@ function Page() {
           {form.questions.map((question) => (
             <Card key={question.id} className="border border-gray-200 shadow-md rounded-xl">
               <CardHeader className="bg-gray-50 p-4 rounded-t-xl border-b">
-                <CardTitle className="text-lg font-semibold">{question.text}</CardTitle>
+                <CardTitle className="text-lg font-semibold">{question.question}</CardTitle>
               </CardHeader>
               <CardContent className="p-5">
                 {question.type === "multiple" && (
@@ -96,7 +110,7 @@ function Page() {
                     onValueChange={(value) => handleChange(question.id, value)}
                     className="space-y-2"
                   >
-                    {question.options.map((option, index) => (
+                    {question.answer_options.map((option, index) => (
                       <div key={index} className="flex items-center space-x-3">
                         <RadioGroupItem value={option} id={`radio-${question.id}-${index}`} />
                         <Label htmlFor={`radio-${question.id}-${index}`} className="cursor-pointer">
@@ -109,14 +123,17 @@ function Page() {
 
                 {question.type === "checkbox" && (
                   <div className="space-y-2">
-                    {question.options.map((option, index) => (
+                    {question.answer_options.map((option, index) => (
                       <div key={index} className="flex items-center space-x-3">
                         <Checkbox
                           id={`checkbox-${question.id}-${index}`}
                           onCheckedChange={(checked) =>
-                            handleChange(question.id, checked
-                              ? [...(answers[question.id] || []), option]
-                              : answers[question.id]?.filter((v: string) => v !== option))
+                            handleChange(
+                              question.id,
+                              checked
+                                ? [...(answers.questions.find(q => q.id === question.id)?.answer || []), option]
+                                : answers.questions.find(q => q.id === question.id)?.answer.filter((v: string) => v !== option) || []
+                            )
                           }
                         />
                         <Label htmlFor={`checkbox-${question.id}-${index}`} className="cursor-pointer">
@@ -132,7 +149,7 @@ function Page() {
                     type="text"
                     placeholder="Masukkan jawaban Anda..."
                     className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500"
-                    value={answers[question.id] || ""}
+                    value={answers.questions.find(q => q.id === question.id)?.answer || ""}
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
                 )}
@@ -141,7 +158,7 @@ function Page() {
                   <Textarea
                     placeholder="Masukkan jawaban Anda..."
                     className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500"
-                    value={answers[question.id] || ""}
+                    value={answers.questions.find(q => q.id === question.id)?.answer || ""}
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
                 )}
