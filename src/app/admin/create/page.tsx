@@ -46,14 +46,14 @@ export default function Page() {
       user_id: "38359f9b-efcb-4ea7-beaf-ef57106e3bfb",
       nama_form: formName,
       description_form: description,
-      status: false,
-      question: questions.map((q) => ({
+      status: true,
+      questions: questions.map((q) => ({
         question: q.question,
         type_question_id: q.type_question_id,
-        answer_options: q.answer_options || [], // Pastikan tidak undefined
+        answer_options: q.answer_options || [], 
       })),
     };
-    console.log("Data form:", formData);
+    console.log("Payload yang dikirim:", JSON.stringify(formData, null, 2));
     console.log(questions);
 
     try {
