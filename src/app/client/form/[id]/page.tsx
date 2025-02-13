@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Undo2 } from "lucide-react"; 
+import Link from "next/link"; 
 
 function Page() {
   const { id } = useParams();
@@ -65,7 +67,9 @@ function Page() {
 
   const handleChange = (questionId: string, value: any) => {
     setAnswers((prev) => {
-      const existingIndex = prev.questions.findIndex((q) => q.id === questionId);
+      const existingIndex = prev.questions.findIndex(
+        (q) => q.id === questionId
+      );
       let updatedQuestions = [...prev.questions];
 
       if (existingIndex !== -1) {
@@ -90,19 +94,31 @@ function Page() {
 
   return (
     <Child>
-      <div className="w-full max-w-3xl mx-auto py-12 px-6">
+        <Link href="/client/form">
+          <Undo2 />
+        </Link>
+      <div className="w-full max-w-3xl mx-auto py-6 px-6">
         <Card className="shadow-lg rounded-xl border border-gray-200">
           <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-t-xl">
-            <CardTitle className="text-xl font-bold">{form.nama_form}</CardTitle>
-            <CardDescription className="text-gray-100">{form.deskripsi}</CardDescription>
+            <CardTitle className="text-xl font-bold">
+              {form.nama_form}
+            </CardTitle>
+            <CardDescription className="text-gray-100">
+              {form.deskripsi}
+            </CardDescription>
           </CardHeader>
         </Card>
 
         <div className="mt-6 space-y-6">
           {form.questions.map((question) => (
-            <Card key={question.id} className="border border-gray-200 shadow-md rounded-xl">
+            <Card
+              key={question.id}
+              className="border border-gray-200 shadow-md rounded-xl"
+            >
               <CardHeader className="bg-gray-50 p-4 rounded-t-xl border-b">
-                <CardTitle className="text-lg font-semibold">{question.question}</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  {question.question}
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-5">
                 {question.type === "multiple" && (
@@ -112,8 +128,14 @@ function Page() {
                   >
                     {question.answer_options.map((option, index) => (
                       <div key={index} className="flex items-center space-x-3">
-                        <RadioGroupItem value={option} id={`radio-${question.id}-${index}`} />
-                        <Label htmlFor={`radio-${question.id}-${index}`} className="cursor-pointer">
+                        <RadioGroupItem
+                          value={option}
+                          id={`radio-${question.id}-${index}`}
+                        />
+                        <Label
+                          htmlFor={`radio-${question.id}-${index}`}
+                          className="cursor-pointer"
+                        >
                           {option}
                         </Label>
                       </div>
@@ -131,12 +153,24 @@ function Page() {
                             handleChange(
                               question.id,
                               checked
-                                ? [...(answers.questions.find(q => q.id === question.id)?.answer || []), option]
-                                : answers.questions.find(q => q.id === question.id)?.answer.filter((v: string) => v !== option) || []
+                                ? [
+                                    ...(answers.questions.find(
+                                      (q) => q.id === question.id
+                                    )?.answer || []),
+                                    option,
+                                  ]
+                                : answers.questions
+                                    .find((q) => q.id === question.id)
+                                    ?.answer.filter(
+                                      (v: string) => v !== option
+                                    ) || []
                             )
                           }
                         />
-                        <Label htmlFor={`checkbox-${question.id}-${index}`} className="cursor-pointer">
+                        <Label
+                          htmlFor={`checkbox-${question.id}-${index}`}
+                          className="cursor-pointer"
+                        >
                           {option}
                         </Label>
                       </div>
@@ -149,7 +183,10 @@ function Page() {
                     type="text"
                     placeholder="Masukkan jawaban Anda..."
                     className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500"
-                    value={answers.questions.find(q => q.id === question.id)?.answer || ""}
+                    value={
+                      answers.questions.find((q) => q.id === question.id)
+                        ?.answer || ""
+                    }
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
                 )}
@@ -158,7 +195,10 @@ function Page() {
                   <Textarea
                     placeholder="Masukkan jawaban Anda..."
                     className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500"
-                    value={answers.questions.find(q => q.id === question.id)?.answer || ""}
+                    value={
+                      answers.questions.find((q) => q.id === question.id)
+                        ?.answer || ""
+                    }
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
                 )}

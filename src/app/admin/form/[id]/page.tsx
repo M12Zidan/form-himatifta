@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Undo2 } from "lucide-react";
 
 export default function ViewForm() {
 
@@ -59,6 +61,9 @@ export default function ViewForm() {
 
   return (
     <div className="w-full max-w-2xl mx-auto py-10 px-4 space-y-6">
+      <Link href='/admin/dashboard'>
+        <Undo2 />
+      </Link>
       <Card>
         <CardHeader>
           <CardTitle className="text-xl font-semibold">{form.nama_form}</CardTitle>
@@ -73,13 +78,13 @@ export default function ViewForm() {
           <Card key={index} className="border border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg font-medium">{q.question}</CardTitle>
-              <Badge variant="outline" className="text-xs text-gray-600 bg-gray-100">
+              <Badge variant="outline" className="text-xs text-white w-fit bg-fuchsia-500">
                 Jenis: {q.type}
               </Badge>
             </CardHeader>
             <CardContent>
               {q.answer_options?.length > 0 && (
-                <ul className="list-disc ml-5 space-y-1 bg-gray-100 p-3 rounded-lg">
+                <ul className="list-disc ml-5 space-y-1  p-3 rounded-lg">
                   {q.answer_options.map((opt, idx) => (
                     <li key={idx} className="text-gray-800">
                       {opt}

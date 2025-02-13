@@ -12,7 +12,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash, Eye, ShieldCheck, ShieldOff, Wrench } from "lucide-react";
+import {
+  Trash,
+  Eye,
+  ShieldCheck,
+  ShieldOff,
+  Wrench,
+  User,
+  CirclePlus,
+} from "lucide-react";
 import axios from "axios";
 
 function Page() {
@@ -76,8 +84,12 @@ function Page() {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <TableCell className="px-6 py-4 text-gray-800 break-words max-w-xs">
-                    <span className="font-semibold">{form.nama_form + " "}</span>
-                    <span className="text-gray-600 text-sm">{form.deskripsi}</span>
+                    <span className="font-semibold">
+                      {form.nama_form + " "}
+                    </span>
+                    <span className="text-gray-600 text-sm">
+                      {form.deskripsi}
+                    </span>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-gray-600">
                     {form.createdBy.nama}
@@ -85,7 +97,9 @@ function Page() {
                   <TableCell className="px-6 py-4 text-center">
                     <Button
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        form.status ? "bg-green-500 text-white" : "bg-yellow-500 text-white"
+                        form.status
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
                       }`}
                     >
                       {form.status ? <ShieldCheck /> : <ShieldOff />}
@@ -93,15 +107,24 @@ function Page() {
                   </TableCell>
                   <TableCell className="px-6 py-4 flex flex-wrap justify-center gap-2">
                     <Link href={`/admin/form/${form.form_id}`}>
-                      <Button size="sm" className="bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-1">
-                        <Eye size={16} /> 
+                      <Button
+                        size="sm"
+                        className="bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-1"
+                      >
+                        <Eye size={16} />
                       </Button>
                     </Link>
-                    <Button size="sm" className="bg-yellow-500 text-white hover:bg-yellow-600 flex items-center gap-1">
-                    <Wrench size={16}/> 
+                    <Button
+                      size="sm"
+                      className="bg-yellow-500 text-white hover:bg-yellow-600 flex items-center gap-1"
+                    >
+                      <Wrench size={16} />
                     </Button>
-                    <Button size="sm" className="bg-red-500 text-white hover:bg-red-600 flex items-center gap-1">
-                      <Trash size={16} /> 
+                    <Button
+                      size="sm"
+                      className="bg-red-500 text-white hover:bg-red-600 flex items-center gap-1"
+                    >
+                      <Trash size={16} />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -110,13 +133,23 @@ function Page() {
           </Table>
         </div>
 
-        {/* Tombol Login */}
-        <Link
-          href="/admin/create"
-          className="block w-full md:w-1/4 mx-auto mt-6 bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-lg px-6"
-        >
-          Buat Form
-        </Link>
+        <div className="flex justify-center gap-6 items-center mt-12">
+          {/* Tombol Create */}
+          <Link
+            href="/admin/create"
+            className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300"
+          >
+            <CirclePlus size={28} />
+          </Link>
+
+          {/* Tombol Profile */}
+          <Link
+            href="/admin/profile"
+            className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-300"
+          >
+            <User size={28} />
+          </Link>
+        </div>
       </div>
     </Child>
   );

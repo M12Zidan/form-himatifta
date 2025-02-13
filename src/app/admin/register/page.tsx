@@ -19,7 +19,6 @@ function Page() {
   const [formData, setFormData] = React.useState({
     name: "",
     email: "",
-    username: "",
     password: "",
   });
 
@@ -33,7 +32,7 @@ function Page() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.username || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password) {
       alert("Semua kolom harus diisi!");
       return;
     }
@@ -85,17 +84,17 @@ function Page() {
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Password</Label>
                 <Input
                   id="username"
                   name="username"
                   placeholder="Username"
-                  value={formData.username}
+                  // value={formData.username}
                   onChange={handleChange}
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Confirm Password</Label>
                 <Input
                   id="password"
                   name="password"
