@@ -70,7 +70,7 @@ function Page() {
       const existingIndex = prev.questions.findIndex(
         (q) => q.id === questionId
       );
-      let updatedQuestions = [...prev.questions];
+      const updatedQuestions = [...prev.questions];
 
       if (existingIndex !== -1) {
         updatedQuestions[existingIndex] = { id: questionId, answer: value };
@@ -83,13 +83,13 @@ function Page() {
   };
 
   const handleSubmit = async () => {
-    // try {
-    //   const response = await axios.post("/api/form/submit", answers);
-    //   console.log("Jawaban berhasil dikirim:", response.data);
-    // } catch (error) {
-    //   console.error("Gagal mengirim jawaban:", error);
-    // }
-    console.log(answers);
+    try {
+      const response = await axios.post("/api/response/submit", answers);
+      console.log("Jawaban berhasil dikirim:", response);
+    } catch (error) {
+      console.error("Gagal mengirim jawaban:", error);
+    }
+    // console.log(answers);
   };
 
   return (

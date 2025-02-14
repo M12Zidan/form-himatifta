@@ -55,8 +55,8 @@ model type_question {
 
 model response {
   response_id      String        @id @unique(map: "unique_responsen_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
-  owner_form       String   @map("form_id")
-  value            String[]      @db.VarChar(255)
+  owner_form       String        @map("form_id")
+  value            String[]
   form_id form @relation(fields: [owner_form], references: [form_id], onUpdate: Restrict)
 
   @@schema("form")
