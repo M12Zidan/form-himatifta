@@ -28,7 +28,6 @@ export default function Layout({ children }: any) {
           <div className={`md:flex space-x-6 ${isOpen ? "block" : "hidden"} absolute md:static bg-green-600 md:bg-transparent w-full md:w-auto left-0 top-16 p-4 md:p-0`}>
             <Link href="/" className="block text-lg hover:text-gray-300 py-2 md:py-0">Home</Link>
             <Link href="/client/form" className="block text-lg hover:text-gray-300 py-2 md:py-0">Client</Link>
-            <Link href="/admin/login" className="block text-lg hover:text-gray-300 py-2 md:py-0">Admin</Link>
           </div>
         </div>
       </nav>
