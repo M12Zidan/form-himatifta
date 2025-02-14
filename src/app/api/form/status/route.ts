@@ -4,10 +4,7 @@ import { setStatusFormSchema } from "@/lib/validationSchemaApi";
 export async function POST(request: Request) {
   try {
     const jsonData = await request.json();
-
-
-
-    // Validasi data dengan Zod
+    
     const result = setStatusFormSchema.safeParse(jsonData);
     if (!result.success) {  
       return Response.json(
