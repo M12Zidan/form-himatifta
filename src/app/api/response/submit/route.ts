@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { setStatusFormSchema } from "@/lib/validationSchemaApi";
+import { responseFormSchema } from "@/lib/validationSchemaApi";
 
 export async function POST(request: Request) {
   try {
@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
 
     // Validasi data dengan Zod
-    const result = setStatusFormSchema.safeParse(jsonData);
+    const result = responseFormSchema.safeParse(jsonData);
     if (!result.success) {  
       return Response.json(
         { message: "Validasi gagal!", errors: result.error.format() },
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { form_id } = result.data;
+    const { form_id, questions } = result.data;
 
     const existingForm = await prisma.form.findUnique({
       where: {
@@ -31,26 +31,32 @@ export async function POST(request: Request) {
       );
     }
 
+    const answerConvert = JSON.stringify(questions);
+
+    const answer: string[] = JSON.parse(answerConvert).map((q: string) => JSON.stringify(q));
 
 
-    const updateStatusForm = await prisma.form.update({
-      where: {
-        form_id
-      },
+    // // Buat form baru
+    const responseAnswer = await prisma.response.create({
       data: {
-        status: !existingForm.status,
-      }
-    })
+        owner_form: form_id,
+        value: answer,
+      },
+    });
 
     return Response.json(
-      { message: `Form Status berhasil diedit menjadi : ${updateStatusForm.status}` },
+      { message: "Form berhasil dibuat", responseAnswer },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error saat membuat form:", error);
     return Response.json(
-      { message: "Terjadi kesalahan" },
-      { status: 404 }
+      { message: "Terjadi kesalahan saat membuat form" },
+      { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return Response.json({ message: "Hello, Next.js!" }, { status: 200 });
 }
