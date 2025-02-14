@@ -37,3 +37,13 @@ export const updateFormSchema = z.object({
   status: z.boolean().optional(),
   questions: z.array(questionUpadateSchema).min(1, "Minimal ada 1 pertanyaan dalam form"),
 });
+
+const answerSchema = z.object({
+  id: z.string().uuid({message: "id questions tidak valid"}),
+  answer: z.string().min(1, "Harus Ada Jawaban"),
+});
+
+export const responseFormSchema = z.object({
+  form_id: z.string().uuid({message: "form_id tidak valid"}),
+  questions: z.array(answerSchema).min(1, "Minimal ada 1 jawaban dalam form"),
+});
