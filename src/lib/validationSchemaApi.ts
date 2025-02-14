@@ -47,3 +47,7 @@ export const responseFormSchema = z.object({
   form_id: z.string().uuid({message: "form_id tidak valid"}),
   questions: z.array(answerSchema).min(1, "Minimal ada 1 jawaban dalam form"),
 });
+
+export const setStatusFormSchema = z.object({
+  form_id: z.string().uuid({message: "form_id tidak valid"}),
+});
