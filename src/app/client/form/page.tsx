@@ -12,11 +12,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { SquarePen} from "lucide-react";
+import { SquarePen } from "lucide-react";
 import axios from "axios";
 
-function page() {
-  interface data {
+function Page() {
+  interface Data {
     form_id: string;
     nama_form: string;
     deskripsi: string;
@@ -27,26 +27,27 @@ function page() {
     };
   }
 
-  const [forms, setForms] = useState<data[]>([]);
+  const [forms, setForms] = useState<Data[]>([]);
 
-  const fetch = async () => {
+  const fetchForms = async () => {
     try {
       const response = await axios.get("/api/form");
-      setForms(response.data.data);
+      const filteredForms = response.data.data.filter((form: Data) => form.status);
+      setForms(filteredForms);
     } catch (error) {
-      console.error(error);
+      console.error("Gagal mengambil data:", error);
     }
   };
 
   useEffect(() => {
-    fetch();
+    fetchForms();
   }, []);
 
   return (
     <Child>
       <div className="w-full max-w-5xl mx-auto py-10 px-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          📋 Daftar Layanan
+          📋 Daftar Layanan Aktif
         </h1>
 
         <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
@@ -63,25 +64,34 @@ function page() {
             </TableHeader>
 
             <TableBody>
-              {forms.map((form) => (
-                <TableRow
-                  key={form.form_id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <TableCell className="px-6 py-4 text-gray-800">
-                    <span className="font-semibold">{form.nama_form}</span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 flex justify-center gap-3">
-                    <Button
-                      size="sm"
-                      className="bg-blue-500 text-white hover:bg-blue-600"
-                    >
-                      <SquarePen size={16} className="mr-1" />{" "}
-                      <Link href={`/client/form/${form.form_id}`}>Ikuti</Link>
-                    </Button>
+              {forms.length > 0 ? (
+                forms.map((form) => (
+                  <TableRow
+                    key={form.form_id}
+                    className="border-b hover:bg-gray-50 transition"
+                  >
+                    <TableCell className="px-6 py-4 text-gray-800">
+                      <span className="font-semibold">{form.nama_form}</span>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 flex justify-center gap-3">
+                      <Link href={`/client/form/${form.form_id}`} passHref>
+                        <Button
+                          size="sm"
+                          className="bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-1"
+                        >
+                          <SquarePen size={16} /> Ikuti
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2} className="px-6 py-4 text-center text-gray-500">
+                    Tidak ada layanan aktif.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>
@@ -90,4 +100,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;
