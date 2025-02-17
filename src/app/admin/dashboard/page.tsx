@@ -21,6 +21,7 @@ import {
   User,
   CirclePlus,
   Loader2,
+  Trash,
 } from "lucide-react";
 import axios from "axios";
 
@@ -158,6 +159,17 @@ function Page() {
                       >
                         <MessageCircleMore  size={16}/>
                       </Button>
+                    </Link>
+                    <Link href={`/admin/delete/${form.form_id}`}>
+                    <Button
+                        size="sm"
+                        className="bg-red-500 text-white hover:bg-red-600 flex items-center gap-1"
+                        // onClick={() => handleDelete(form.form_id)}
+                    >
+                      <Trash size={16} />
+                    </Button>
+                    
+
                     </Link>
                   </TableCell>
                 </TableRow>
