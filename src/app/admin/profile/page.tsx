@@ -1,4 +1,5 @@
-// import { useSession, signOut } from "next-auth/react";
+import { signOut } from "@/lib/auth";
+import { useSession } from "next-auth/react"
 import { User, LogOut } from "lucide-react";
 
 export default function ProfilePage() {
@@ -16,8 +17,8 @@ export default function ProfilePage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md text-center">
         <User size={48} className="mx-auto text-gray-700" />
-        <h1 className="text-xl font-semibold mt-4">{session.user.name}</h1>
-        <p className="text-gray-600">{session.user.email}</p>
+        <h1 className="text-xl font-semibold mt-4">{session.user?.name}</h1>
+        <p className="text-gray-600">{session.user?.email}</p>
 
         <button
           onClick={() => signOut()}

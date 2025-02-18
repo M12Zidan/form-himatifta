@@ -1,6 +1,5 @@
 "use client";
 
-import Child from "../../page";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
@@ -73,7 +72,6 @@ function Page() {
   }, []);
 
   return (
-    <Child>
       <div className="w-full max-w-5xl mx-auto py-10 px-4 md:px-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           📋 Status Form Aktif
@@ -196,7 +194,6 @@ function Page() {
           </Link>
         </div>
       </div>
-    </Child>
   );
 }
 

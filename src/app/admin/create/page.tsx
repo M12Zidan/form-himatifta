@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import Child from "../../page";
 import { Undo2 } from "lucide-react";
 import Link from "next/link";
 
@@ -69,7 +68,6 @@ export default function Page() {
   };
 
   return (
-    <Child>
       <div className="w-full max-w-2xl mx-auto py-10 space-y-6">
         <Link href='/admin/dashboard'>
           <Undo2 />
@@ -189,6 +187,5 @@ export default function Page() {
           </Button>
         </div>
       </div>
-    </Child>
   );
 }

@@ -3,7 +3,6 @@
 import * as React from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Child from "../page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +56,7 @@ function Page() {
   };
 
   return (
-    <Child>
+    <div>
       <Card className="w-[350px] mx-auto mt-40">
         <CardHeader className="text-center">
           <CardTitle className="text-xl font-semibold text-green-600">
@@ -103,7 +102,7 @@ function Page() {
           </form>
         </CardContent>
       </Card>
-    </Child>
+    </div>
   );
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Child from "../../page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +41,7 @@ function Page() {
       return;
     }
 
-    if (formData.username.length < 6 || formData.password.length < 6) {
+    if (formData.email.length < 6 || formData.password.length < 6) {
       alert("Username dan Password harus minimal 6 karakter!");
       return;
     }
@@ -51,7 +50,7 @@ function Page() {
   };
 
   return (
-    <Child>
+    <div>
       <Card className="w-[400px] mx-auto mt-32 shadow-lg rounded-lg border border-gray-200">
         <CardHeader className="text-center">
           <CardTitle className="text-xl font-semibold text-green-600">HIMATIFTA</CardTitle>
@@ -119,7 +118,7 @@ function Page() {
           </p>
         </CardFooter>
       </Card>
-    </Child>
+    </div>
   );
 }
 
