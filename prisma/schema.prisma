@@ -11,36 +11,62 @@ datasource db {
 }
 
 model user {
-  user_id    String  @id @unique(map: "unique_users_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
-  nm_lengkap String? @db.VarChar(255)
-  password   String? @db.VarChar(255)
-  email      String? @db.VarChar(255)
+  user_id    String    @id @unique(map: "unique_users_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
+  nm_lengkap String?   @db.VarChar(255)
+  password   String   @db.VarChar(255) 
+  email      String   @db.VarChar(255)@unique
+  image      String?
+  accounts   Account[]
   form       form[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@schema("auth")
 }
 
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user user @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@schema("auth")
+}
+
 model form {
-  form_id          String  @id @unique(map: "unique_form_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
-  createdBy          String  @map("user_id")
-  nama_form        String? @db.VarChar(255)
+  form_id          String     @id @unique(map: "unique_form_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
+  createdBy        String     @map("user_id")
+  nama_form        String?    @db.VarChar(255)
   description_form String?
-  status           Boolean @default(false)
-  user             user    @relation(fields: [createdBy], references: [user_id], onUpdate: Restrict)
+  status           Boolean    @default(false)
+  user             user       @relation(fields: [createdBy], references: [user_id], onUpdate: Restrict)
+  question         question[]
+  response         response[]
 
   @@schema("form")
-  question question[]
-  response response[]
 }
 
 model question {
-  question_id      String   @id @default(uuid()) @db.VarChar(255)
-  owner_form       String   @map("form_id")
-  question         String?  @db.VarChar(255)
-  type_question_id Int      @map("type_question")
+  question_id      String        @id @default(uuid()) @db.VarChar(255)
+  owner_form       String        @map("form_id")
+  question         String?       @db.VarChar(255)
+  type_question_id Int           @map("type_question")
   answer_options   String[]
-  form_id form @relation(fields: [owner_form], references: [form_id], onUpdate: Restrict)
-  type_question type_question @relation(fields: [type_question_id], references: [id], onUpdate: Restrict)
+  form_id          form          @relation(fields: [owner_form], references: [form_id], onUpdate: Restrict)
+  type_question    type_question @relation(fields: [type_question_id], references: [id], onUpdate: Restrict)
 
   @@schema("form")
 }
@@ -54,10 +80,10 @@ model type_question {
 }
 
 model response {
-  response_id      String        @id @unique(map: "unique_responsen_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
-  owner_form       String   @map("form_id")
-  value            String[]      @db.VarChar(255)
-  form_id form @relation(fields: [owner_form], references: [form_id], onUpdate: Restrict)
+  response_id String   @id @unique(map: "unique_responsen_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
+  owner_form  String   @map("form_id")
+  value       String[] @db.VarChar(255)
+  form_id     form     @relation(fields: [owner_form], references: [form_id], onUpdate: Restrict)
 
   @@schema("form")
 }
