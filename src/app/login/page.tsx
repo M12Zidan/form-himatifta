@@ -3,7 +3,7 @@
 import * as React from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Child from "../../page";
+import Child from "../page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,22 +35,24 @@ function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
+  
     if (!formData.email || !formData.password) {
       setError("Email dan Password wajib diisi!");
       return;
     }
-
+  
     const result = await signIn("credentials", {
       redirect: false,
       email: formData.email,
       password: formData.password,
     });
-
+  
     if (result?.error) {
       setError("Login gagal. Periksa kembali email dan password!");
+      setFormData({ email: formData.email, password: "" });
+      
     } else {
-      router.push("/admin/dashboard"); // Redirect ke halaman dashboard jika sukses
+      router.push("/admin/dashboard");
     }
   };
 
