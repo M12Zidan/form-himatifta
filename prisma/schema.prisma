@@ -24,7 +24,7 @@ model form {
   form_id          String  @id @unique(map: "unique_form_cuid") @default(dbgenerated("public.uuid_generate_v4()")) @db.VarChar(255)
   createdBy          String  @map("user_id")
   nama_form        String? @db.VarChar(255)
-  description_form String? @db.VarChar(255)
+  description_form String?
   status           Boolean @default(false)
   user             user    @relation(fields: [createdBy], references: [user_id], onUpdate: Restrict)
 
