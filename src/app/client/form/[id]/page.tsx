@@ -1,7 +1,7 @@
 "use client";
 
 import Child from "../../../page";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -17,11 +17,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Undo2 } from "lucide-react"; 
-import Link from "next/link"; 
+import { Undo2 } from "lucide-react";
+import Link from "next/link";
 
 function Page() {
   const { id } = useParams();
+  const router = useRouter();
 
   interface Form {
     form_id: string;
@@ -37,7 +38,7 @@ function Page() {
 
   interface Answer {
     form_id: string;
-    questions: { id: string; answer: string | string[] }[];
+    questions: { id: string; answer: string }[];
   }
 
   const [form, setForm] = useState<Form>({
@@ -52,6 +53,8 @@ function Page() {
     questions: [],
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
+
   useEffect(() => {
     const fetchForm = async () => {
       try {
@@ -65,7 +68,7 @@ function Page() {
     fetchForm();
   }, [id]);
 
-  const handleChange = (questionId: string, value: any) => {
+  const handleChange = (questionId: string, value: string) => {
     setAnswers((prev) => {
       const existingIndex = prev.questions.findIndex(
         (q) => q.id === questionId
@@ -80,23 +83,76 @@ function Page() {
 
       return { ...prev, questions: updatedQuestions };
     });
+
+    setErrors((prev) => ({ ...prev, [questionId]: false }));
+  };
+
+  const handleCheckboxChange = (
+    questionId: string,
+    value: string,
+    checked: boolean
+  ) => {
+    setAnswers((prev) => {
+      const existingIndex = prev.questions.findIndex(
+        (q) => q.id === questionId
+      );
+      let updatedQuestions = [...prev.questions];
+
+      if (existingIndex !== -1) {
+        let currentAnswers = updatedQuestions[existingIndex].answer
+          ? updatedQuestions[existingIndex].answer.split(",")
+          : [];
+
+        if (checked) {
+          currentAnswers.push(value);
+        } else {
+          currentAnswers = currentAnswers.filter((ans) => ans !== value);
+        }
+
+        updatedQuestions[existingIndex] = {
+          id: questionId,
+          answer: currentAnswers.join(","),
+        };
+      } else {
+        updatedQuestions.push({ id: questionId, answer: value });
+      }
+
+      return { ...prev, questions: updatedQuestions };
+    });
+
+    setErrors((prev) => ({ ...prev, [questionId]: false }));
+  };
+
+  const validateAnswers = () => {
+    let newErrors: { [key: string]: boolean } = {};
+    form.questions.forEach((q) => {
+      const answer =
+        answers.questions.find((ans) => ans.id === q.id)?.answer || "";
+      if (!answer.trim()) {
+        newErrors[q.id] = true;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    // try {
-    //   const response = await axios.post("/api/form/submit", answers);
-    //   console.log("Jawaban berhasil dikirim:", response.data);
-    // } catch (error) {
-    //   console.error("Gagal mengirim jawaban:", error);
-    // }
-    console.log(answers);
+    if (!validateAnswers()) return;
+
+    try {
+      await axios.post("/api/response/submit", answers);
+      alert("Jawaban berhasil dikirim!");
+      router.push("/client/form");
+    } catch (error) {
+      console.error("Gagal mengirim jawaban:", error);
+    }
   };
 
   return (
     <Child>
-        <Link href="/client/form">
-          <Undo2 />
-        </Link>
+      <Link href="/client/form">
+        <Undo2 />
+      </Link>
       <div className="w-full max-w-3xl mx-auto py-6 px-6">
         <Card className="shadow-lg rounded-xl border border-gray-200">
           <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-t-xl">
@@ -149,22 +205,12 @@ function Page() {
                       <div key={index} className="flex items-center space-x-3">
                         <Checkbox
                           id={`checkbox-${question.id}-${index}`}
-                          onCheckedChange={(checked) =>
-                            handleChange(
-                              question.id,
-                              checked
-                                ? [
-                                    ...(answers.questions.find(
-                                      (q) => q.id === question.id
-                                    )?.answer || []),
-                                    option,
-                                  ]
-                                : answers.questions
-                                    .find((q) => q.id === question.id)
-                                    ?.answer.filter(
-                                      (v: string) => v !== option
-                                    ) || []
-                            )
+                          checked={answers.questions
+                            .find((q) => q.id === question.id)
+                            ?.answer?.split(",")
+                            .includes(option)}
+                          onCheckedChange={(checked :any) =>
+                            handleCheckboxChange(question.id, option, checked)
                           }
                         />
                         <Label
@@ -187,18 +233,26 @@ function Page() {
                       answers.questions.find((q) => q.id === question.id)
                         ?.answer || ""
                     }
+                    required
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
+                )}
+
+                {errors[question.id] && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Pertanyaan ini wajib diisi!
+                  </p>
                 )}
 
                 {question.type === "textarea" && (
                   <Textarea
                     placeholder="Masukkan jawaban Anda..."
-                    className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500"
+                    className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500 h-32 resize-y"
                     value={
                       answers.questions.find((q) => q.id === question.id)
                         ?.answer || ""
                     }
+                    required
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
                 )}
@@ -206,9 +260,16 @@ function Page() {
             </Card>
           ))}
 
+          
+
           <Button
             onClick={handleSubmit}
-            className="w-full bg-green-600 hover:bg-green-700 transition-all text-white font-semibold text-lg py-3 rounded-xl shadow-md"
+            disabled={answers.questions.some((q) => q.answer.trim() === "")}
+            className={`w-full ${
+              answers.questions.some((q) => q.answer.trim() === "")
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+            } transition-all text-white font-semibold text-lg py-3 rounded-xl shadow-md`}
           >
             Kirim Jawaban
           </Button>
