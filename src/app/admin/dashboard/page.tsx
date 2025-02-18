@@ -52,7 +52,7 @@ function Page() {
   const handleUpdateStatus = async (id: string) => {
     setLoading(id); // Set loading saat klik
     try {
-      const response = await axios.post("/api/form/status", { form_id: id });
+      // const response = await axios.post("/api/form/status", { form_id: id });
 
       // Update status form secara lokal setelah sukses
       setForms((prevForms) =>

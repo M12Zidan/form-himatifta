@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 
-export default function Layout({ children }: any) {
-  const pathname = usePathname();
+export default function LayoutLandingPage({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -27,23 +29,11 @@ export default function Layout({ children }: any) {
           {/* Navbar Links */}
           <div className={`md:flex space-x-6 ${isOpen ? "block" : "hidden"} absolute md:static bg-green-600 md:bg-transparent w-full md:w-auto left-0 top-16 p-4 md:p-0`}>
             <Link href="/" className="block text-lg hover:text-gray-300 py-2 md:py-0">Home</Link>
-            <Link href="/client/form" className="block text-lg hover:text-gray-300 py-2 md:py-0">Client</Link>
+            <Link href="/form" className="block text-lg hover:text-gray-300 py-2 md:py-0">Client</Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section for Home Page */}
-      {pathname === "/" && (
-        <main className="pt-20 flex-1 container mx-auto px-4 text-center">
-          <img 
-            src="https://th.bing.com/th/id/R.dce620488f6403fc6fb752b38478f17b?rik=Y4liY3xKc2namA&riu=http%3a%2f%2finformatika.degasys.hu%2fwp-content%2fuploads%2f2023%2f06%2fInformatika.png&ehk=NLDMOQogHV5oaVZIYMfn8OrEQXjdKkF6LTgGU%2b2WMeQ%3d&risl=&pid=ImgRaw&r=0" 
-            alt="home" 
-            className="w-full max-w-3xl mx-auto rounded-lg shadow-lg object-cover h-64"
-          />
-        </main>
-      )}
-
-      {/* Main Content */}
       <main className="pt-20 flex-1 container mx-auto px-4">
         {children}
       </main>

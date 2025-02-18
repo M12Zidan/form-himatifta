@@ -35,7 +35,7 @@ export default function Page() {
     ]);
   };
 
-  const updateQuestion = (id: any, key: any, value: any) => {
+  const updateQuestion = (id: number, key: string, value: string | string[]) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q, index) =>
         index === id ? { ...q, [key]: value } : q

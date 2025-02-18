@@ -1,6 +1,5 @@
 "use client";
 
-import Child from "../../../page";
 import { useParams, useRouter } from "next/navigation";
 import {
   Card,
@@ -73,7 +72,7 @@ function Page() {
       const existingIndex = prev.questions.findIndex(
         (q) => q.id === questionId
       );
-      let updatedQuestions = [...prev.questions];
+      const updatedQuestions = [...prev.questions];
 
       if (existingIndex !== -1) {
         updatedQuestions[existingIndex] = { id: questionId, answer: value };
@@ -96,7 +95,7 @@ function Page() {
       const existingIndex = prev.questions.findIndex(
         (q) => q.id === questionId
       );
-      let updatedQuestions = [...prev.questions];
+      const updatedQuestions = [...prev.questions];
 
       if (existingIndex !== -1) {
         let currentAnswers = updatedQuestions[existingIndex].answer
@@ -124,7 +123,7 @@ function Page() {
   };
 
   const validateAnswers = () => {
-    let newErrors: { [key: string]: boolean } = {};
+    const newErrors: { [key: string]: boolean } = {};
     form.questions.forEach((q) => {
       const answer =
         answers.questions.find((ans) => ans.id === q.id)?.answer || "";
@@ -142,15 +141,15 @@ function Page() {
     try {
       await axios.post("/api/response/submit", answers);
       alert("Jawaban berhasil dikirim!");
-      router.push("/client/form");
+      router.push("/form");
     } catch (error) {
       console.error("Gagal mengirim jawaban:", error);
     }
   };
 
   return (
-    <Child>
-      <Link href="/client/form">
+    <div>
+      <Link href="/form">
         <Undo2 />
       </Link>
       <div className="w-full max-w-3xl mx-auto py-6 px-6">
@@ -209,7 +208,7 @@ function Page() {
                             .find((q) => q.id === question.id)
                             ?.answer?.split(",")
                             .includes(option)}
-                          onCheckedChange={(checked :any) =>
+                          onCheckedChange={(checked : boolean) =>
                             handleCheckboxChange(question.id, option, checked)
                           }
                         />
@@ -275,7 +274,7 @@ function Page() {
           </Button>
         </div>
       </div>
-    </Child>
+    </div>
   );
 }
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Child from "../../page";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
@@ -28,23 +27,22 @@ function Page() {
   }
 
   const [forms, setForms] = useState<Data[]>([]);
-
-  const fetchForms = async () => {
-    try {
-      const response = await axios.get("/api/form");
-      const filteredForms = response.data.data.filter((form: Data) => form.status);
-      setForms(filteredForms);
-    } catch (error) {
-      console.error("Gagal mengambil data:", error);
-    }
-  };
-
+  
   useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const response = await axios.get("/api/form");
+        const filteredForms = response.data.data.filter((form: Data) => form.status);
+        setForms(filteredForms);
+      } catch (error) {
+        console.error("Gagal mengambil data:", error);
+      }
+    };
+
     fetchForms();
   }, []);
 
   return (
-    <Child>
       <div className="w-full max-w-5xl mx-auto py-10 px-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           📋 Daftar Layanan Aktif
@@ -74,7 +72,7 @@ function Page() {
                       <span className="font-semibold">{form.nama_form}</span>
                     </TableCell>
                     <TableCell className="px-6 py-4 flex justify-center gap-3">
-                      <Link href={`/client/form/${form.form_id}`} passHref>
+                      <Link href={`/form/${form.form_id}`} passHref>
                         <Button
                           size="sm"
                           className="bg-blue-500 text-white hover:bg-blue-600 flex items-center gap-1"
@@ -96,7 +94,6 @@ function Page() {
           </Table>
         </div>
       </div>
-    </Child>
   );
 }
 

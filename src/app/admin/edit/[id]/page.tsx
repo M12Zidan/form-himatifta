@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader} from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Undo2 } from "lucide-react";
@@ -47,7 +47,7 @@ export default function ViewForm() {
           nama_form: response.data.data.nama_form,
           description_form: response.data.data.deskripsi,
           status: false,
-          questions: response.data.data.questions.map((q: any) => ({
+          questions: response.data.data.questions.map((q: {question: string, type: string, answer_options: string[]}) => ({
             question: q.question,
             type_question_id: q.type,
             answer_options: q.answer_options,
@@ -63,7 +63,7 @@ export default function ViewForm() {
     fetchForm();
   }, [id]);
 
-  const handleUpdate = async (e: any) => {
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await axios.put(`/api/form/${id}`, updateForm);
