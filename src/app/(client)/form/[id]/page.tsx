@@ -226,6 +226,7 @@ function Page() {
                 {question.type === "text" && (
                   <Input
                     type="text"
+                    maxLength={100}
                     className="mt-2 w-full border-gray-300 focus:ring-green-500"
                     value={
                       answers.questions.find((q) => q.id === question.id)
@@ -237,6 +238,7 @@ function Page() {
 
                 {question.type === "textarea" && (
                   <Textarea
+                    maxLength={255}
                     placeholder="Masukkan jawaban Anda..."
                     className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500 h-32 resize-y"
                     value={
