@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Undo2 } from "lucide-react";
 import Link from "next/link";
@@ -22,6 +22,7 @@ import Link from "next/link";
 function Page() {
   const { id } = useParams();
   const router = useRouter();
+  const questionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   interface Form {
     form_id: string;
@@ -53,6 +54,7 @@ function Page() {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -132,18 +134,30 @@ function Page() {
       }
     });
     setErrors(newErrors);
+
+    // Scroll ke pertanyaan pertama yang error
+    const firstErrorKey = Object.keys(newErrors)[0];
+    if (firstErrorKey && questionRefs.current[firstErrorKey]) {
+      questionRefs.current[firstErrorKey]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
     if (!validateAnswers()) return;
 
+    setIsSubmitting(true);
     try {
       await axios.post("/api/response/submit", answers);
-      alert("Jawaban berhasil dikirim!");
-      router.push("/form");
+      router.push("/form"); // Redirect setelah submit sukses
     } catch (error) {
       console.error("Gagal mengirim jawaban:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -183,16 +197,8 @@ function Page() {
                   >
                     {question.answer_options.map((option, index) => (
                       <div key={index} className="flex items-center space-x-3">
-                        <RadioGroupItem
-                          value={option}
-                          id={`radio-${question.id}-${index}`}
-                        />
-                        <Label
-                          htmlFor={`radio-${question.id}-${index}`}
-                          className="cursor-pointer"
-                        >
-                          {option}
-                        </Label>
+                        <RadioGroupItem value={option} />
+                        <Label className="cursor-pointer">{option}</Label>
                       </div>
                     ))}
                   </RadioGroup>
@@ -203,21 +209,15 @@ function Page() {
                     {question.answer_options.map((option, index) => (
                       <div key={index} className="flex items-center space-x-3">
                         <Checkbox
-                          id={`checkbox-${question.id}-${index}`}
                           checked={answers.questions
                             .find((q) => q.id === question.id)
                             ?.answer?.split(",")
                             .includes(option)}
-                          onCheckedChange={(checked : boolean) =>
+                          onCheckedChange={(checked: boolean) =>
                             handleCheckboxChange(question.id, option, checked)
                           }
                         />
-                        <Label
-                          htmlFor={`checkbox-${question.id}-${index}`}
-                          className="cursor-pointer"
-                        >
-                          {option}
-                        </Label>
+                        <Label className="cursor-pointer">{option}</Label>
                       </div>
                     ))}
                   </div>
@@ -226,21 +226,13 @@ function Page() {
                 {question.type === "text" && (
                   <Input
                     type="text"
-                    placeholder="Masukkan jawaban Anda..."
-                    className="mt-2 w-full border-gray-300 focus:ring-green-500 focus:border-green-500"
+                    className="mt-2 w-full border-gray-300 focus:ring-green-500"
                     value={
                       answers.questions.find((q) => q.id === question.id)
                         ?.answer || ""
                     }
-                    required
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
-                )}
-
-                {errors[question.id] && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Pertanyaan ini wajib diisi!
-                  </p>
                 )}
 
                 {question.type === "textarea" && (
@@ -255,22 +247,22 @@ function Page() {
                     onChange={(e) => handleChange(question.id, e.target.value)}
                   />
                 )}
+
+                {errors[question.id] && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Pertanyaan ini wajib diisi!
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
 
-          
-
           <Button
             onClick={handleSubmit}
-            disabled={answers.questions.some((q) => q.answer.trim() === "")}
-            className={`w-full ${
-              answers.questions.some((q) => q.answer.trim() === "")
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700"
-            } transition-all text-white font-semibold text-lg py-3 rounded-xl shadow-md`}
+            disabled={isSubmitting}
+            className="w-full bg-green-600 hover:bg-green-700 transition-all text-white font-semibold text-lg py-3 rounded-xl shadow-md"
           >
-            Kirim Jawaban
+            {isSubmitting ? "Mengirim..." : "Kirim Jawaban"}
           </Button>
         </div>
       </div>

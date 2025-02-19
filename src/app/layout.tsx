@@ -17,6 +17,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Himatifta Unitomo",
   description: "Ini adalah website resmi Himatifta Unitomo",
+  icons: {
+    icon: "/img/LOGO_HIMA.png"
+  },
 };
 
 export default function RootLayout({
@@ -29,9 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
-        {children}
-        </SessionProvider>        
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

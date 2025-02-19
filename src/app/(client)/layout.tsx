@@ -3,13 +3,18 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePathname } from 'next/navigation';
+
+
 
 export default function LayoutLandingPage({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname(); // Mendapatkan path aktif
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,14 +27,31 @@ export default function LayoutLandingPage({
           <button 
             className="md:hidden block focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* Navbar Links */}
-          <div className={`md:flex space-x-6 ${isOpen ? "block" : "hidden"} absolute md:static bg-green-600 md:bg-transparent w-full md:w-auto left-0 top-16 p-4 md:p-0`}>
-            <Link href="/" className="block text-lg hover:text-gray-300 py-2 md:py-0">Home</Link>
-            <Link href="/form" className="block text-lg hover:text-gray-300 py-2 md:py-0">Client</Link>
+          {/* Tabs Navigation */}
+          <div
+            className={`md:flex md:items-center md:space-x-6 ${
+              isOpen ? 'block' : 'hidden'
+            } absolute md:static bg-green-600 md:bg-transparent w-full md:w-auto left-0 top-16 p-4 md:p-0 transition-all`}
+          >
+            <Tabs defaultValue={pathname} className="w-full">
+              <TabsList className="w-full flex md:space-x-4 bg-transparent">
+                <TabsTrigger value="/" asChild>
+                  <Link href="/" className="text-lg px-4 py-2">
+                    Home
+                  </Link>
+                </TabsTrigger>
+                <TabsTrigger value="/form" asChild>
+                  <Link href="/form" className="text-lg px-4 py-2">
+                    Client
+                  </Link>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
         </div>
       </nav>
