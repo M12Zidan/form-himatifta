@@ -153,8 +153,7 @@ function Page() {
     setIsSubmitting(true);
     try {
       await axios.post("/api/response/submit", answers);
-      router.push("/https://api.whatsapp.com/send?phone=6289524616107&text=Halo%20kak%2C%20saya%20ingin%20mendaftar%20Training%20Next.js.%0ASaya%20sudah%20siap%20transfer%20HTM%20sebesar%20Rp20.000.%0AMohon%20dikirimkan%20info%20rekening%20dan%20konfirmasi%20pendaftaran%20ya%20kak.%20Terima%20kasih%20%F0%9F%99%8F
-"); // Redirect setelah submit sukses
+      router.push("/https://api.whatsapp.com/send?phone=6289524616107&text=Halo%20kak%2C%20saya%20ingin%20mendaftar%20Training%20Next.js.%0ASaya%20sudah%20siap%20transfer%20HTM%20sebesar%20Rp20.000.%0AMohon%20dikirimkan%20info%20rekening%20dan%20konfirmasi%20pendaftaran%20ya%20kak.%20Terima%20kasih%20%F0%9F%99%8F"); // Redirect setelah submit sukses
     } catch (error) {
       console.error("Gagal mengirim jawaban:", error);
     } finally {
